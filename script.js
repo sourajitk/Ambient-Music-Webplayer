@@ -329,6 +329,12 @@ document.addEventListener('DOMContentLoaded', () => {
         audio.volume = e.target.value;
     });
 
+    // Set dynamic year for copyright
+    const currentYearEl = document.getElementById('current-year');
+    if (currentYearEl) {
+        currentYearEl.textContent = new Date().getFullYear();
+    }
+
     // Make album art rotate or some visual effect if playing?
     // Let's keep it simple for now as requested.
 });

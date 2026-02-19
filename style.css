@@ -392,6 +392,16 @@ body {
     transform: translateY(-2px);
 }
 
+.copyright {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--secondary-color);
+    font-size: 0.8rem;
+    z-index: 10;
+}
+
 @media (max-width: 480px) {
     .player-container {
         width: 100%;
@@ -419,5 +429,14 @@ body {
         border: none;
         color: var(--secondary-color);
         opacity: 0.6;
+    }
+
+    .copyright {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        transform: none;
+        margin-bottom: 20px;
+        text-align: center;
     }
 }
