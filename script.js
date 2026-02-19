@@ -11,11 +11,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const trackTitle = document.getElementById('track-title');
     const artistName = document.getElementById('artist-name');
     const backgroundBlur = document.getElementById('background-blur');
+    const shuffleBtn = document.getElementById('shuffle-btn');
+    const repeatBtn = document.getElementById('repeat-btn');
 
     let isPlaying = false;
     let currentTrackIndex = 0;
     let tracks = [];
     let filteredTracks = [];
+    let isShuffle = false;
+    let repeatMode = 'all'; // 'all', 'one', 'off'
+    // Set initial repeat state
+    repeatBtn.classList.add('active');
 
     const API_URL = './songs.json';
 
@@ -150,8 +156,52 @@ document.addEventListener('DOMContentLoaded', () => {
         isPlaying = !isPlaying;
     }
 
+    function toggleShuffle() {
+        isShuffle = !isShuffle;
+        shuffleBtn.classList.toggle('active', isShuffle);
+    }
+
+    function toggleRepeat() {
+        if (repeatMode === 'all') {
+            repeatMode = 'one';
+            repeatBtn.innerHTML = '<i class="fas fa-redo-alt"></i> 1'; // Indicate repeat one
+            repeatBtn.classList.add('active');
+        } else if (repeatMode === 'one') {
+            repeatMode = 'off';
+            repeatBtn.innerHTML = '<i class="fas fa-redo"></i>';
+            repeatBtn.classList.remove('active');
+        } else {
+            repeatMode = 'all';
+            repeatBtn.innerHTML = '<i class="fas fa-redo"></i>';
+            repeatBtn.classList.add('active');
+        }
+    }
+
     function playNext() {
-        currentTrackIndex = (currentTrackIndex + 1) % filteredTracks.length;
+        if (repeatMode === 'one') {
+            audio.currentTime = 0;
+            audio.play().catch(e => console.error(e));
+            return;
+        }
+
+        if (isShuffle) {
+            let randomIndex = Math.floor(Math.random() * filteredTracks.length);
+            // Optional: avoid repeating same track immediately if list > 1
+            while (randomIndex === currentTrackIndex && filteredTracks.length > 1) {
+                randomIndex = Math.floor(Math.random() * filteredTracks.length);
+            }
+            currentTrackIndex = randomIndex;
+        } else {
+            currentTrackIndex = (currentTrackIndex + 1) % filteredTracks.length;
+            // Handle repeat off (stop at end) logic if we wanted, but standard is cycle 'all' usually.
+            // If repeatMode is 'off' and we are at the last track, stop? 
+            // The prompt implies "repeat button" exists, so logic should respect it.
+            // If repeatMode is 'off' and we hit end, we usually stop. 
+            // BUT playNext is also the "Next Button". Next button usually forces next track regardless of repeat mode.
+            // So we only check repeat 'off' in the 'ended' event, not the button click. 
+            // However, the provided 'all' logic in playNext cycles using modulo. 
+        }
+
         loadTrack(currentTrackIndex);
         if (!isPlaying) {
             togglePlay();
@@ -159,7 +209,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function playPrev() {
-        currentTrackIndex = (currentTrackIndex - 1 + filteredTracks.length) % filteredTracks.length;
+        if (audio.currentTime > 3) {
+            audio.currentTime = 0;
+            return;
+        }
+
+        if (isShuffle) {
+            // In shuffle, prev usually goes to history, but for simple implementation random or just basic prev is fine.
+            // Let's stick to random for consistency or sequential? Standard behavior is History.
+            // For this simpler app, let's just do random or basic prev. 
+            // Let's do Standard Prev: (index - 1).
+            // Actually, if we are in shuffle mode, "Previous" usually just restarts track or goes to previous played.
+            // Let's keep it simple: just go to previous index in the filtered list.
+            currentTrackIndex = (currentTrackIndex - 1 + filteredTracks.length) % filteredTracks.length;
+        } else {
+            currentTrackIndex = (currentTrackIndex - 1 + filteredTracks.length) % filteredTracks.length;
+        }
+
         loadTrack(currentTrackIndex);
         if (!isPlaying) {
             togglePlay();
@@ -174,8 +240,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event Listeners
     playPauseBtn.addEventListener('click', togglePlay);
-    nextBtn.addEventListener('click', playNext);
+    nextBtn.addEventListener('click', () => {
+        // Force next track even if repeat one or off
+        if (isShuffle) {
+            let randomIndex = Math.floor(Math.random() * filteredTracks.length);
+            while (randomIndex === currentTrackIndex && filteredTracks.length > 1) {
+                randomIndex = Math.floor(Math.random() * filteredTracks.length);
+            }
+            currentTrackIndex = randomIndex;
+        } else {
+            currentTrackIndex = (currentTrackIndex + 1) % filteredTracks.length;
+        }
+        loadTrack(currentTrackIndex);
+        if (!isPlaying) togglePlay();
+    });
+
     prevBtn.addEventListener('click', playPrev);
+    shuffleBtn.addEventListener('click', toggleShuffle);
+    repeatBtn.addEventListener('click', toggleRepeat);
 
     audio.addEventListener('timeupdate', () => {
         if (!isNaN(audio.duration)) {
@@ -191,7 +273,27 @@ document.addEventListener('DOMContentLoaded', () => {
         seekBar.max = audio.duration;
     });
 
-    audio.addEventListener('ended', playNext);
+    audio.addEventListener('ended', () => {
+        if (repeatMode === 'one') {
+            audio.currentTime = 0;
+            audio.play().catch(e => console.error(e));
+        } else if (repeatMode === 'off') {
+            // Check if we are at the end
+            if (currentTrackIndex < filteredTracks.length - 1) {
+                // Not end, go next
+                currentTrackIndex++;
+                loadTrack(currentTrackIndex);
+                audio.play();
+            } else {
+                // End of playlist, stop
+                isPlaying = false;
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        } else {
+            // Repeat All (default)
+            playNext();
+        }
+    });
 
     seekBar.addEventListener('input', () => {
         audio.currentTime = seekBar.value;

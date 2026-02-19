@@ -257,6 +257,11 @@ body {
     transform: scale(0.95);
 }
 
+.control-btn.active {
+    color: var(--accent-color);
+    text-shadow: 0 0 10px rgba(27, 215, 96, 0.5);
+}
+
 .play-btn {
     width: 60px;
     height: 60px;
