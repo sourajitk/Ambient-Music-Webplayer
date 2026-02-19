@@ -15,10 +15,16 @@
 <body>
     <div class="background-blur" id="background-blur"></div>
     <div class="player-container">
-        <div class="genre-container">
-            <select id="genre-select">
-                <option value="all">All Genres</option>
-            </select>
+        <div class="custom-select-wrapper">
+            <div class="custom-select" id="custom-genre-select">
+                <div class="custom-select-trigger">
+                    <span id="trigger-text">All Genres</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="custom-options">
+                    <!-- Options will be populated here by JS -->
+                </div>
+            </div>
         </div>
 
         <div class="album-art-container">

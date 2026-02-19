@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const trackTitle = document.getElementById('track-title');
     const artistName = document.getElementById('artist-name');
     const backgroundBlur = document.getElementById('background-blur');
-    const genreSelect = document.getElementById('genre-select');
 
     let isPlaying = false;
     let currentTrackIndex = 0;
@@ -34,29 +33,84 @@ document.addEventListener('DOMContentLoaded', () => {
             trackTitle.textContent = 'Error loading tracks';
         });
 
+    const customSelect = document.getElementById('custom-genre-select');
+    const customOptions = document.querySelector('.custom-options');
+    const triggerText = document.getElementById('trigger-text');
+
     function populateGenres() {
         const genres = new Set(tracks.map(track => track.genre).filter(g => g));
+
+        // Clear existing options
+        customOptions.innerHTML = '';
+
+        // Add "All Genres" option
+        addCustomOption('All Genres', 'all', true);
+
+        // Add other genres
         genres.forEach(genre => {
-            const option = document.createElement('option');
-            option.value = genre;
-            option.textContent = genre.charAt(0).toUpperCase() + genre.slice(1);
-            genreSelect.appendChild(option);
+            const displayGenre = genre.charAt(0).toUpperCase() + genre.slice(1);
+            addCustomOption(displayGenre, genre, false);
         });
     }
 
-    // Genre filter event listener
-    genreSelect.addEventListener('change', () => {
-        const selectedGenre = genreSelect.value;
-        if (selectedGenre === 'all') {
+    function addCustomOption(text, value, isSelected) {
+        const option = document.createElement('div');
+        option.classList.add('custom-option');
+        if (isSelected) option.classList.add('selected');
+        option.textContent = text;
+        option.dataset.value = value;
+
+        option.addEventListener('click', () => {
+            selectGenre(value, text);
+        });
+
+        customOptions.appendChild(option);
+    }
+
+    function selectGenre(value, text) {
+        // Update UI
+        triggerText.textContent = text;
+
+        // Update styling of selected option
+        const options = document.querySelectorAll('.custom-option');
+        options.forEach(opt => {
+            if (opt.dataset.value === value) {
+                opt.classList.add('selected');
+            } else {
+                opt.classList.remove('selected');
+            }
+        });
+
+        // Close dropdown
+        customSelect.classList.remove('open');
+
+        // Filter tracks
+        if (value === 'all') {
             filteredTracks = tracks;
         } else {
-            filteredTracks = tracks.filter(track => track.genre === selectedGenre);
+            filteredTracks = tracks.filter(track => track.genre === value);
         }
 
-        currentTrackIndex = 0; // Reset to first track of new filter
+        currentTrackIndex = 0;
         loadTrack(currentTrackIndex);
         if (isPlaying) {
             audio.play().catch(e => console.error("Playback failed:", e));
+        }
+    }
+
+    // Toggle dropdown open/close
+    customSelect.addEventListener('click', (e) => {
+        // If clicking on an option, the option listener handles it. 
+        // We only toggle if clicking the trigger area
+        if (e.target.closest('.custom-select-trigger')) {
+            customSelect.classList.toggle('open');
+        }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!customSelect.contains(e.target)) {
+            customSelect.classList.remove('open');
         }
     });
 
