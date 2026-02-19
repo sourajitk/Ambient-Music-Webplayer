@@ -26,20 +26,53 @@ document.addEventListener('DOMContentLoaded', () => {
     repeatBtn.classList.add('active');
 
     const API_URL = './songs.json';
+    const REMOTE_API_URL = 'https://www.ambient-music.online/songs.json';
+    const CACHE_KEY = 'ambient_songs_cache';
 
-    // Fetch tracks
-    fetch(API_URL)
-        .then(response => response.json())
-        .then(data => {
-            tracks = data;
-            filteredTracks = tracks; // Initially all tracks
-            populateGenres();
-            loadTrack(currentTrackIndex);
-        })
-        .catch(error => {
-            console.error('Error fetching tracks:', error);
-            trackTitle.textContent = 'Error loading tracks';
-        });
+    async function fetchTracks() {
+        try {
+            // Try fetching from remote first
+            constresponse = await fetch(REMOTE_API_URL);
+            if (!response.ok) throw new Error('Network response was not ok');
+            const data = await response.json();
+
+            // Update cache
+            localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+
+            initPlayer(data);
+            console.log('Loaded from Remote');
+        } catch (error) {
+            console.warn('Remote fetch failed, checking cache...', error);
+
+            const cachedData = localStorage.getItem(CACHE_KEY);
+            if (cachedData) {
+                initPlayer(JSON.parse(cachedData));
+                console.log('Loaded from Cache');
+                // Optional: Notify user they are offline/using cache?
+            } else {
+                console.warn('No cache found, falling back to local file...');
+                try {
+                    const response = await fetch(API_URL);
+                    const data = await response.json();
+                    initPlayer(data);
+                    console.log('Loaded from Local File');
+                } catch (localError) {
+                    console.error('Critical: Failed to load tracks from any source', localError);
+                    trackTitle.textContent = 'Error loading tracks';
+                }
+            }
+        }
+    }
+
+    function initPlayer(data) {
+        tracks = data;
+        filteredTracks = tracks; // Initially all tracks
+        populateGenres();
+        loadTrack(currentTrackIndex);
+    }
+
+    // Start initialization
+    fetchTracks();
 
     const customSelect = document.getElementById('custom-genre-select');
     const customOptions = document.querySelector('.custom-options');

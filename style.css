@@ -354,3 +354,26 @@ body {
         height: 300px;
     }
 }
+
+.source-code-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--secondary-color);
+    padding: 8px 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.8rem;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.source-code-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--primary-color);
+    transform: translateY(-2px);
+}
