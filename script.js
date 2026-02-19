@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const backgroundBlur = document.getElementById('background-blur');
     const shuffleBtn = document.getElementById('shuffle-btn');
     const repeatBtn = document.getElementById('repeat-btn');
+    const trackNumberOverlay = document.getElementById('track-number-overlay');
 
     let isPlaying = false;
     let currentTrackIndex = 0;
@@ -138,6 +139,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Update background
         backgroundBlur.style.backgroundImage = `url('${track.albumArtUrl}')`;
+
+        // Update hover overlay
+        trackNumberOverlay.textContent = `Track ${index + 1}`;
 
         // Reset player state
         seekBar.value = 0;
