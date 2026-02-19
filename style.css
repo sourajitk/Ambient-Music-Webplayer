@@ -3,8 +3,15 @@
     --secondary-color: #b3b3b3;
     --background-color: #121212;
     --player-bg: rgba(255, 255, 255, 0.1);
-    --accent-color: #1bd760;
+    --accent-color: #b0f2c2;
     --blur-strength: 60px;
+}
+
+/* ... existing code ... */
+
+.control-btn.active {
+    color: var(--accent-color);
+    text-shadow: 0 0 10px rgba(176, 242, 194, 0.6);
 }
 
 /* Custom Dropdown */
@@ -259,7 +266,7 @@ body {
 
 .control-btn.active {
     color: var(--accent-color);
-    text-shadow: 0 0 10px rgba(27, 215, 96, 0.5);
+    text-shadow: 0 0 15px rgba(176, 242, 194, 0.4);
 }
 
 .play-btn {

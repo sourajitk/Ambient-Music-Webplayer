@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let filteredTracks = [];
     let isShuffle = false;
     let repeatMode = 'all'; // 'all', 'one', 'off'
+    let playHistory = [];
     // Set initial repeat state
     repeatBtn.classList.add('active');
 
@@ -89,6 +90,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Close dropdown
         customSelect.classList.remove('open');
+
+        // Reset history when changing list context
+        playHistory = [];
 
         // Filter tracks
         if (value === 'all') {
@@ -184,6 +188,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Add current track to history before moving on
+        playHistory.push(currentTrackIndex);
+        // Limit history size to avoid memory issues (though unlikely with simple ints)
+        if (playHistory.length > 50) playHistory.shift();
+
         if (isShuffle) {
             let randomIndex = Math.floor(Math.random() * filteredTracks.length);
             // Optional: avoid repeating same track immediately if list > 1
@@ -193,13 +202,6 @@ document.addEventListener('DOMContentLoaded', () => {
             currentTrackIndex = randomIndex;
         } else {
             currentTrackIndex = (currentTrackIndex + 1) % filteredTracks.length;
-            // Handle repeat off (stop at end) logic if we wanted, but standard is cycle 'all' usually.
-            // If repeatMode is 'off' and we are at the last track, stop? 
-            // The prompt implies "repeat button" exists, so logic should respect it.
-            // If repeatMode is 'off' and we hit end, we usually stop. 
-            // BUT playNext is also the "Next Button". Next button usually forces next track regardless of repeat mode.
-            // So we only check repeat 'off' in the 'ended' event, not the button click. 
-            // However, the provided 'all' logic in playNext cycles using modulo. 
         }
 
         loadTrack(currentTrackIndex);
@@ -240,20 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event Listeners
     playPauseBtn.addEventListener('click', togglePlay);
-    nextBtn.addEventListener('click', () => {
-        // Force next track even if repeat one or off
-        if (isShuffle) {
-            let randomIndex = Math.floor(Math.random() * filteredTracks.length);
-            while (randomIndex === currentTrackIndex && filteredTracks.length > 1) {
-                randomIndex = Math.floor(Math.random() * filteredTracks.length);
-            }
-            currentTrackIndex = randomIndex;
-        } else {
-            currentTrackIndex = (currentTrackIndex + 1) % filteredTracks.length;
-        }
-        loadTrack(currentTrackIndex);
-        if (!isPlaying) togglePlay();
-    });
+    nextBtn.addEventListener('click', playNext);
 
     prevBtn.addEventListener('click', playPrev);
     shuffleBtn.addEventListener('click', toggleShuffle);
