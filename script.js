@@ -402,6 +402,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Event Listeners
+    document.addEventListener('keydown', (e) => {
+        // Prevent default spacebar action (scrolling) and toggle play
+        if (e.code === 'Space' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+            togglePlay();
+        }
+    });
+
     playPauseBtn.addEventListener('click', togglePlay);
     nextBtn.addEventListener('click', playNext);
 
