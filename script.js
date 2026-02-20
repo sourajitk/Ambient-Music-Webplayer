@@ -260,6 +260,19 @@ document.addEventListener('DOMContentLoaded', () => {
         currentTimeEl.textContent = '0:00';
         totalDurationEl.textContent = '0:00'; // Will update on metadata load
 
+        // Update Media Session API for host OS controls
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: track.title,
+                artist: track.artist,
+                album: 'Ambient Music Player',
+                artwork: [
+                    { src: track.albumArtUrl, sizes: '512x512', type: 'image/jpeg' },
+                    { src: track.albumArtUrl, sizes: '256x256', type: 'image/jpeg' }
+                ]
+            });
+        }
+
         if (isPlaying) {
             audio.play().catch(e => console.error("Playback failed:", e));
         }
@@ -412,6 +425,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const currentYearEl = document.getElementById('current-year');
     if (currentYearEl) {
         currentYearEl.textContent = new Date().getFullYear();
+    }
+
+    // Media Session API Action Handlers
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.setActionHandler('play', togglePlay);
+        navigator.mediaSession.setActionHandler('pause', togglePlay);
+        navigator.mediaSession.setActionHandler('previoustrack', playPrev);
+        navigator.mediaSession.setActionHandler('nexttrack', playNext);
+        // Optional: seekto, seekforward, seekbackward
     }
 
     // Make album art rotate or some visual effect if playing?
