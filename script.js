@@ -39,6 +39,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set initial repeat state
     repeatBtn.classList.add('active');
 
+    // Load volume preference from cache or default to 1.0 (max)
+    const VOLUME_PREF_KEY = 'ambient_volume_preference';
+    let cachedVolumePref = localStorage.getItem(VOLUME_PREF_KEY);
+    let currentVolume = cachedVolumePref === null ? 1.0 : parseFloat(cachedVolumePref);
+
+    // Apply initial volume
+    audio.volume = currentVolume;
+    if (volumeBar) {
+        volumeBar.value = currentVolume;
+    }
+
     const API_URL = './songs.json';
     const REMOTE_API_URL = 'https://www.ambient-music.online/songs.json';
     const CACHE_KEY = 'ambient_songs_cache';
@@ -80,8 +91,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function initPlayer(data) {
         tracks = data;
-        filteredTracks = tracks; // Initially all tracks
-        populateGenres();
+
+        const savedGenre = localStorage.getItem('ambient_current_genre') || 'all';
+        let savedTrackIndex = parseInt(localStorage.getItem('ambient_current_track_index'), 10);
+        if (isNaN(savedTrackIndex)) savedTrackIndex = 0;
+
+        if (savedGenre === 'all') {
+            filteredTracks = tracks;
+        } else {
+            filteredTracks = tracks.filter(track => track.genre === savedGenre);
+        }
+
+        populateGenres(savedGenre);
+
+        const displayGenre = savedGenre === 'all' ? 'All Genres' : savedGenre.charAt(0).toUpperCase() + savedGenre.slice(1);
+        triggerText.textContent = displayGenre;
+
+        currentTrackIndex = savedTrackIndex;
         loadTrack(currentTrackIndex);
     }
 
@@ -92,19 +118,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const customOptions = document.querySelector('.custom-options');
     const triggerText = document.getElementById('trigger-text');
 
-    function populateGenres() {
+    function populateGenres(selectedGenre = 'all') {
         const genres = new Set(tracks.map(track => track.genre).filter(g => g));
 
         // Clear existing options
         customOptions.innerHTML = '';
 
         // Add "All Genres" option
-        addCustomOption('All Genres', 'all', true);
+        addCustomOption('All Genres', 'all', selectedGenre === 'all');
 
         // Add other genres
         genres.forEach(genre => {
             const displayGenre = genre.charAt(0).toUpperCase() + genre.slice(1);
-            addCustomOption(displayGenre, genre, false);
+            addCustomOption(displayGenre, genre, selectedGenre === genre);
         });
     }
 
@@ -141,6 +167,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Reset history when changing list context
         playHistory = [];
+
+        // Save genre to cache
+        localStorage.setItem('ambient_current_genre', value);
 
         // Filter tracks
         if (value === 'all') {
@@ -209,6 +238,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Ensure index is within bounds (safety check)
         if (index >= filteredTracks.length) index = 0;
+
+        currentTrackIndex = index;
+        localStorage.setItem('ambient_current_track_index', currentTrackIndex);
 
         const track = filteredTracks[index];
         audio.src = track.url;
@@ -419,6 +451,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     volumeBar.addEventListener('input', (e) => {
         audio.volume = e.target.value;
+        localStorage.setItem('ambient_volume_preference', e.target.value);
     });
 
     // Set dynamic year for copyright
