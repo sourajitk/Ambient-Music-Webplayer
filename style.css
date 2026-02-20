@@ -152,6 +152,12 @@ body {
     animation: gradientFlow 15s ease infinite;
     z-index: -1;
     filter: brightness(0.6);
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+}
+
+.background-gradient.active {
+    opacity: 1;
 }
 
 @keyframes gradientFlow {

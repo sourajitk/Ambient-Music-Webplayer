@@ -10,7 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const albumArt = document.getElementById('album-art');
     const trackTitle = document.getElementById('track-title');
     const artistName = document.getElementById('artist-name');
-    const backgroundGradient = document.getElementById('background-gradient');
+    const bgGradient1 = document.getElementById('bg-gradient-1');
+    const bgGradient2 = document.getElementById('bg-gradient-2');
     const shuffleBtn = document.getElementById('shuffle-btn');
     const repeatBtn = document.getElementById('repeat-btn');
     const trackNumberOverlay = document.getElementById('track-number-overlay');
@@ -22,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let isShuffle = false;
     let repeatMode = 'all'; // 'all', 'one', 'off'
     let playHistory = [];
+    let activeBg = 1;
     // Set initial repeat state
     repeatBtn.classList.add('active');
 
@@ -181,8 +183,21 @@ document.addEventListener('DOMContentLoaded', () => {
             ['#fa709a', '#fee140', '#f6d365', '#fda085']
         ];
         const palette = palettes[index % palettes.length];
-        backgroundGradient.style.background = `linear-gradient(-45deg, ${palette[0]}, ${palette[1]}, ${palette[2]}, ${palette[3]})`;
-        backgroundGradient.style.backgroundSize = '400% 400%';
+        const newGradient = `linear-gradient(-45deg, ${palette[0]}, ${palette[1]}, ${palette[2]}, ${palette[3]})`;
+
+        if (activeBg === 1) {
+            bgGradient2.style.background = newGradient;
+            bgGradient2.style.backgroundSize = '400% 400%';
+            bgGradient2.classList.add('active');
+            bgGradient1.classList.remove('active');
+            activeBg = 2;
+        } else {
+            bgGradient1.style.background = newGradient;
+            bgGradient1.style.backgroundSize = '400% 400%';
+            bgGradient1.classList.add('active');
+            bgGradient2.classList.remove('active');
+            activeBg = 1;
+        }
 
         // Update hover overlay
         trackNumberOverlay.textContent = `Track ${index + 1}`;
