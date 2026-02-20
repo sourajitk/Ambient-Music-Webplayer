@@ -27,7 +27,14 @@ document.addEventListener('DOMContentLoaded', () => {
     let isShuffle = false;
     let repeatMode = 'all'; // 'all', 'one', 'off'
     let playHistory = [];
-    let isGradientEnabled = true;
+
+    // Load gradient preference from cache or default to false
+    const GRADIENT_PREF_KEY = 'ambient_gradient_preference';
+    let cachedGradientPref = localStorage.getItem(GRADIENT_PREF_KEY);
+    let isGradientEnabled = cachedGradientPref === null ? false : cachedGradientPref === 'true';
+
+    // Set initial UI state for gradient toggle switch
+    gradientToggle.checked = isGradientEnabled;
 
     // Set initial repeat state
     repeatBtn.classList.add('active');
@@ -176,6 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Toggle background state
     gradientToggle.addEventListener('change', (e) => {
         isGradientEnabled = e.target.checked;
+        localStorage.setItem(GRADIENT_PREF_KEY, isGradientEnabled);
         updateBackgroundState();
     });
 
