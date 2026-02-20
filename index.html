@@ -20,10 +20,11 @@
 
 <body>
     <div class="background-blur" id="background-blur"></div>
-    <div class="background-gradient active" id="bg-gradient-1"
-        style="background: linear-gradient(-45deg, #12c2e9, #c471ed, #f64f59, #12c2e9); background-size: 400% 400%;">
+    <div id="gradient-container" class="gradient-container active">
+        <div class="background-gradient active"
+            style="background-image: linear-gradient(-45deg, #ff9a9e, #fecfef, #a1c4fd, #c2e9fb); background-size: 400% 400%;">
+        </div>
     </div>
-    <div class="background-gradient" id="bg-gradient-2"></div>
     <div class="player-container">
         <div class="custom-select-wrapper">
             <div class="custom-select" id="custom-genre-select">
@@ -68,11 +69,6 @@
         </div>
     </div>
 
-
-    <div class="copyright">
-        &copy; <span id="current-year"></span> Sourajit Karmakar
-    </div>
-
     <div class="settings-modal-overlay" id="settings-overlay">
         <div class="settings-modal">
             <div class="settings-modal-header">
@@ -91,14 +87,20 @@
         </div>
     </div>
 
-    <div class="settings-container">
-        <button id="settings-btn" class="settings-btn" title="Settings">
-            <i class="fas fa-cog"></i> Settings
-        </button>
+    <div class="bottom-area">
+        <div class="bottom-links">
+            <div class="settings-container">
+                <button id="settings-btn" class="settings-btn" title="Settings">
+                    <i class="fas fa-cog"></i> Settings
+                </button>
+            </div>
+            <a href="https://github.com/sourajitk/Ambient-Music-Webplayer" class="source-code-btn" target="_blank"
+                title="View Source Code"><i class="fas fa-code"></i> Source Code</a>
+        </div>
+        <div class="copyright">
+            &copy; <span id="current-year"></span> Sourajit Karmakar
+        </div>
     </div>
-
-    <a href="https://github.com/sourajitk/Ambient-Music-Webplayer" class="source-code-btn" target="_blank"
-        title="View Source Code"><i class="fas fa-code"></i> Source Code</a>
     <script src="script.js"></script>
 </body>
 

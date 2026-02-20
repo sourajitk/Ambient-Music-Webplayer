@@ -152,7 +152,7 @@ body {
     filter: blur(var(--blur-strength)) brightness(0.4);
     z-index: -2;
     opacity: 0;
-    transition: opacity 1.5s ease-in-out, background-image 0.5s ease-in-out;
+    transition: opacity 3s ease-in-out, background-image 3s ease-in-out;
 }
 
 .background-blur.active {
@@ -161,11 +161,8 @@ body {
 
 /* Settings Menu Styles */
 .settings-container {
-    position: absolute;
-    bottom: 50px;
-    /* Above source code button */
-    right: 20px;
-    z-index: 100;
+    position: relative;
+    /* Flow relative now */
 }
 
 .settings-btn {
@@ -321,19 +318,31 @@ input:checked+.ios-slider:before {
     transform: translateX(16px);
 }
 
+.gradient-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+}
+
+.gradient-container.active {
+    opacity: 1;
+}
+
 .background-gradient {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(-45deg, #12c2e9, #c471ed, #f64f59, #12c2e9);
-    background-size: 400% 400%;
     animation: gradientFlow 15s ease infinite;
-    z-index: -1;
     filter: brightness(0.6);
     opacity: 0;
-    transition: opacity 1.5s ease-in-out;
+    transition: opacity 3s ease-in-out;
 }
 
 .background-gradient.active {
@@ -569,10 +578,27 @@ input:checked+.ios-slider:before {
     /* Ensure absolute children are relative to this */
 }
 
-.source-code-btn {
+.bottom-area {
     position: absolute;
-    bottom: 15px;
-    right: 20px;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    z-index: 10;
+    width: 100%;
+}
+
+.bottom-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.source-code-btn {
     background: rgba(255, 255, 255, 0.1);
     color: var(--secondary-color);
     padding: 6px 12px;
@@ -583,7 +609,6 @@ input:checked+.ios-slider:before {
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
-    z-index: 10;
 }
 
 .source-code-btn:hover {
@@ -593,13 +618,9 @@ input:checked+.ios-slider:before {
 }
 
 .copyright {
-    position: absolute;
-    bottom: 15px;
-    left: 50%;
-    transform: translateX(-50%);
     color: var(--secondary-color);
     font-size: 0.8rem;
-    z-index: 10;
+    text-align: center;
 }
 
 @media (max-width: 480px) {
@@ -621,22 +642,18 @@ input:checked+.ios-slider:before {
 
     /* On mobile, place it in the flow at the bottom */
     .source-code-btn {
-        position: relative;
-        bottom: auto;
-        right: auto;
-        margin-top: 10px;
         background: transparent;
         border: none;
         color: var(--secondary-color);
         opacity: 0.6;
     }
 
-    .copyright {
+    .bottom-area {
         position: relative;
         bottom: auto;
-        left: auto;
         transform: none;
+        left: auto;
+        margin-top: 10px;
         margin-bottom: 20px;
-        text-align: center;
     }
 }

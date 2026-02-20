@@ -10,8 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const albumArt = document.getElementById('album-art');
     const trackTitle = document.getElementById('track-title');
     const artistName = document.getElementById('artist-name');
-    const bgGradient1 = document.getElementById('bg-gradient-1');
-    const bgGradient2 = document.getElementById('bg-gradient-2');
+    const gradientContainer = document.getElementById('gradient-container');
     const backgroundBlur = document.getElementById('background-blur');
     const settingsBtn = document.getElementById('settings-btn');
     const settingsOverlay = document.getElementById('settings-overlay');
@@ -28,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let isShuffle = false;
     let repeatMode = 'all'; // 'all', 'one', 'off'
     let playHistory = [];
-    let activeBg = 1;
     let isGradientEnabled = true;
 
     // Set initial repeat state
@@ -184,12 +182,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateBackgroundState() {
         if (isGradientEnabled) {
             backgroundBlur.classList.remove('active');
-            if (activeBg === 1) bgGradient1.classList.add('active');
-            else bgGradient2.classList.add('active');
+            gradientContainer.classList.add('active');
         } else {
             backgroundBlur.classList.add('active');
-            bgGradient1.classList.remove('active');
-            bgGradient2.classList.remove('active');
+            gradientContainer.classList.remove('active');
         }
     }
 
@@ -228,17 +224,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const palette = palettes[index % palettes.length];
         const newGradient = `linear-gradient(-45deg, ${palette[0]}, ${palette[1]}, ${palette[2]}, ${palette[3]})`;
 
-        if (activeBg === 1) {
-            bgGradient2.style.background = newGradient;
-            bgGradient2.style.backgroundSize = '400% 400%';
-            activeBg = 2;
-        } else {
-            bgGradient1.style.background = newGradient;
-            bgGradient1.style.backgroundSize = '400% 400%';
-            activeBg = 1;
-        }
+        const newBg = document.createElement('div');
+        newBg.className = 'background-gradient';
+        newBg.style.backgroundImage = newGradient;
+        newBg.style.backgroundSize = '400% 400%';
+        gradientContainer.appendChild(newBg);
 
-        // Apply active classes based on current mode
+        // Force reflow to ensure the initial state is rendered before adding the transition class
+        newBg.offsetWidth;
+        newBg.classList.add('active');
+
+        // Remove older gradients after the fade transition completes (3s)
+        setTimeout(() => {
+            while (newBg.previousElementSibling) {
+                newBg.previousElementSibling.remove();
+            }
+        }, 3000);
+
+        // Apply container active classes based on user settings
         updateBackgroundState();
 
         // Update hover overlay
