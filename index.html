@@ -19,6 +19,7 @@
 </head>
 
 <body>
+    <div class="background-blur" id="background-blur"></div>
     <div class="background-gradient active" id="bg-gradient-1"
         style="background: linear-gradient(-45deg, #12c2e9, #c471ed, #f64f59, #12c2e9); background-size: 400% 400%;">
     </div>
@@ -71,6 +72,31 @@
     <div class="copyright">
         &copy; <span id="current-year"></span> Sourajit Karmakar
     </div>
+
+    <div class="settings-modal-overlay" id="settings-overlay">
+        <div class="settings-modal">
+            <div class="settings-modal-header">
+                <h3>Settings</h3>
+                <button id="close-settings-btn" class="close-btn" title="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="settings-modal-body">
+                <div class="settings-option">
+                    <span>Flowing Gradient</span>
+                    <label class="ios-switch">
+                        <input type="checkbox" id="gradient-toggle" checked>
+                        <span class="ios-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="settings-container">
+        <button id="settings-btn" class="settings-btn" title="Settings">
+            <i class="fas fa-cog"></i> Settings
+        </button>
+    </div>
+
     <a href="https://github.com/sourajitk/Ambient-Music-Webplayer" class="source-code-btn" target="_blank"
         title="View Source Code"><i class="fas fa-code"></i> Source Code</a>
     <script src="script.js"></script>

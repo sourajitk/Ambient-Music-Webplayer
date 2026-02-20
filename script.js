@@ -12,6 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const artistName = document.getElementById('artist-name');
     const bgGradient1 = document.getElementById('bg-gradient-1');
     const bgGradient2 = document.getElementById('bg-gradient-2');
+    const backgroundBlur = document.getElementById('background-blur');
+    const settingsBtn = document.getElementById('settings-btn');
+    const settingsOverlay = document.getElementById('settings-overlay');
+    const closeSettingsBtn = document.getElementById('close-settings-btn');
+    const gradientToggle = document.getElementById('gradient-toggle');
     const shuffleBtn = document.getElementById('shuffle-btn');
     const repeatBtn = document.getElementById('repeat-btn');
     const trackNumberOverlay = document.getElementById('track-number-overlay');
@@ -24,6 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let repeatMode = 'all'; // 'all', 'one', 'off'
     let playHistory = [];
     let activeBg = 1;
+    let isGradientEnabled = true;
+
     // Set initial repeat state
     repeatBtn.classList.add('active');
 
@@ -146,14 +153,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Toggle dropdown open/close
     customSelect.addEventListener('click', (e) => {
-        // If clicking on an option, the option listener handles it. 
-        // We only toggle if clicking the trigger area
         if (e.target.closest('.custom-select-trigger')) {
             customSelect.classList.toggle('open');
         }
     });
 
-    // Close dropdown when clicking outside
+    // Open settings modal
+    settingsBtn.addEventListener('click', () => {
+        settingsOverlay.classList.add('open');
+    });
+
+    // Close settings modal
+    closeSettingsBtn.addEventListener('click', () => {
+        settingsOverlay.classList.remove('open');
+    });
+
+    // Close settings modal on backdrop click
+    settingsOverlay.addEventListener('click', (e) => {
+        if (e.target === settingsOverlay) {
+            settingsOverlay.classList.remove('open');
+        }
+    });
+
+    // Toggle background state
+    gradientToggle.addEventListener('change', (e) => {
+        isGradientEnabled = e.target.checked;
+        updateBackgroundState();
+    });
+
+    function updateBackgroundState() {
+        if (isGradientEnabled) {
+            backgroundBlur.classList.remove('active');
+            if (activeBg === 1) bgGradient1.classList.add('active');
+            else bgGradient2.classList.add('active');
+        } else {
+            backgroundBlur.classList.add('active');
+            bgGradient1.classList.remove('active');
+            bgGradient2.classList.remove('active');
+        }
+    }
+
+    // Close dropdowns when clicking outside
     document.addEventListener('click', (e) => {
         if (!customSelect.contains(e.target)) {
             customSelect.classList.remove('open');
@@ -172,6 +212,9 @@ document.addEventListener('DOMContentLoaded', () => {
         artistName.textContent = track.artist;
         albumArt.src = track.albumArtUrl;
 
+        // Update blur background (even if hidden, keep it synced)
+        backgroundBlur.style.backgroundImage = `url('${track.albumArtUrl}')`;
+
         // Update flowing gradient background
         const palettes = [
             ['#ff9a9e', '#fecfef', '#a1c4fd', '#c2e9fb'],
@@ -188,16 +231,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (activeBg === 1) {
             bgGradient2.style.background = newGradient;
             bgGradient2.style.backgroundSize = '400% 400%';
-            bgGradient2.classList.add('active');
-            bgGradient1.classList.remove('active');
             activeBg = 2;
         } else {
             bgGradient1.style.background = newGradient;
             bgGradient1.style.backgroundSize = '400% 400%';
-            bgGradient1.classList.add('active');
-            bgGradient2.classList.remove('active');
             activeBg = 1;
         }
+
+        // Apply active classes based on current mode
+        updateBackgroundState();
 
         // Update hover overlay
         trackNumberOverlay.textContent = `Track ${index + 1}`;
