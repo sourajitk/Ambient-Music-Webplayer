@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const albumArt = document.getElementById('album-art');
     const trackTitle = document.getElementById('track-title');
     const artistName = document.getElementById('artist-name');
-    const backgroundBlur = document.getElementById('background-blur');
+    const backgroundGradient = document.getElementById('background-gradient');
     const shuffleBtn = document.getElementById('shuffle-btn');
     const repeatBtn = document.getElementById('repeat-btn');
     const trackNumberOverlay = document.getElementById('track-number-overlay');
@@ -170,8 +170,19 @@ document.addEventListener('DOMContentLoaded', () => {
         artistName.textContent = track.artist;
         albumArt.src = track.albumArtUrl;
 
-        // Update background
-        backgroundBlur.style.backgroundImage = `url('${track.albumArtUrl}')`;
+        // Update flowing gradient background
+        const palettes = [
+            ['#ff9a9e', '#fecfef', '#a1c4fd', '#c2e9fb'],
+            ['#a18cd1', '#fbc2eb', '#fad0c4', '#ffd1ff'],
+            ['#84fab0', '#8fd3f4', '#a6c0fe', '#f68084'],
+            ['#e0c3fc', '#8ec5fc', '#9face6', '#74ebd5'],
+            ['#fccb90', '#d57eeb', '#e0c3fc', '#8ec5fc'],
+            ['#4facfe', '#00f2fe', '#43e97b', '#38f9d7'],
+            ['#fa709a', '#fee140', '#f6d365', '#fda085']
+        ];
+        const palette = palettes[index % palettes.length];
+        backgroundGradient.style.background = `linear-gradient(-45deg, ${palette[0]}, ${palette[1]}, ${palette[2]}, ${palette[3]})`;
+        backgroundGradient.style.backgroundSize = '400% 400%';
 
         // Update hover overlay
         trackNumberOverlay.textContent = `Track ${index + 1}`;
