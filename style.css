@@ -137,17 +137,27 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    overflow-y: auto;
+    overflow-x: hidden;
     padding: 20px 0;
 }
 
+/* Add a wrapper to organize everything */
+.app-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    margin: auto;
+}
+
 .background-blur {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     background-size: cover;
     background-position: center;
     filter: blur(var(--blur-strength)) brightness(0.4);
@@ -320,11 +330,11 @@ input:checked+.ios-slider:before {
 }
 
 .gradient-container {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     z-index: -1;
     opacity: 0;
     transition: opacity 1.5s ease-in-out;
@@ -517,6 +527,11 @@ input:checked+.ios-slider:before {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
+/* Optically center the play triangle icon */
+.play-btn i.fa-play {
+    margin-left: 4px;
+}
+
 .play-btn:hover {
     background: #f0f0f0;
     color: #000;
@@ -580,7 +595,10 @@ input:checked+.ios-slider:before {
 }
 
 .bottom-area {
-    margin-top: 20px;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -607,6 +625,9 @@ input:checked+.ios-slider:before {
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .source-code-btn:hover {
@@ -637,6 +658,26 @@ input:checked+.ios-slider:before {
         width: 260px;
         height: 260px;
     }
+}
+
+/* Scale down UI on short screens (e.g. 1366x768 usually has limited vertical space) */
+/* Scale down UI on short screens (e.g. 1366x768 usually has limited vertical space) */
+@media (max-height: 800px) {
+    .app-wrapper {
+        transform: scale(0.85);
+        transform-origin: center top;
+        /* The element is visually 15% smaller, so we pull up the bottom by 15% to remove the empty space */
+        margin-bottom: -15%;
+    }
+}
+
+@media (max-height: 700px) {
+    .app-wrapper {
+        transform: scale(0.75);
+        transform-origin: center top;
+        /* The element is visually 25% smaller, so we pull up the bottom by 25% */
+        margin-bottom: -25%;
+    }
 
     /* On mobile, place it in the flow at the bottom */
     .source-code-btn {
@@ -644,5 +685,14 @@ input:checked+.ios-slider:before {
         border: none;
         color: var(--secondary-color);
         opacity: 0.6;
+    }
+
+    .bottom-area {
+        position: relative;
+        bottom: auto;
+        transform: none;
+        left: auto;
+        margin-top: 10px;
+        margin-bottom: 20px;
     }
 }
