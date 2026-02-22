@@ -248,6 +248,9 @@ document.addEventListener('DOMContentLoaded', () => {
         artistName.textContent = track.artist;
         albumArt.src = track.albumArtUrl;
 
+        // In case of rapid switching before previous transitions finished, clear older ones immediately
+        const existingBlurs = Array.from(blurContainer.children);
+
         // Update blur background (even if hidden, keep it synced)
         const newBlur = document.createElement('div');
         newBlur.className = 'blur-layer';
@@ -260,9 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Remove older blur layers after fade transition completes (3s)
         setTimeout(() => {
-            while (newBlur.previousElementSibling) {
-                newBlur.previousElementSibling.remove();
-            }
+            existingBlurs.forEach(blur => blur.remove());
         }, 3000);
 
         // Update flowing gradient background
@@ -278,6 +279,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const palette = palettes[index % palettes.length];
         const newGradient = `linear-gradient(-45deg, ${palette[0]}, ${palette[1]}, ${palette[2]}, ${palette[3]})`;
 
+        const existingGradients = Array.from(gradientContainer.children);
+
         const newBg = document.createElement('div');
         newBg.className = 'background-gradient';
         newBg.style.backgroundImage = newGradient;
@@ -290,9 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Remove older gradients after the fade transition completes (3s)
         setTimeout(() => {
-            while (newBg.previousElementSibling) {
-                newBg.previousElementSibling.remove();
-            }
+            existingGradients.forEach(bg => bg.remove());
         }, 3000);
 
         // Apply container active classes based on user settings
