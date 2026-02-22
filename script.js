@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const trackTitle = document.getElementById('track-title');
     const artistName = document.getElementById('artist-name');
     const gradientContainer = document.getElementById('gradient-container');
-    const backgroundBlur = document.getElementById('background-blur');
+    const blurContainer = document.getElementById('blur-container');
     const settingsBtn = document.getElementById('settings-btn');
     const settingsOverlay = document.getElementById('settings-overlay');
     const closeSettingsBtn = document.getElementById('close-settings-btn');
@@ -218,10 +218,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function updateBackgroundState() {
         if (isGradientEnabled) {
-            backgroundBlur.classList.remove('active');
+            blurContainer.classList.remove('active');
             gradientContainer.classList.add('active');
         } else {
-            backgroundBlur.classList.add('active');
+            blurContainer.classList.add('active');
             gradientContainer.classList.remove('active');
         }
     }
@@ -249,7 +249,21 @@ document.addEventListener('DOMContentLoaded', () => {
         albumArt.src = track.albumArtUrl;
 
         // Update blur background (even if hidden, keep it synced)
-        backgroundBlur.style.backgroundImage = `url('${track.albumArtUrl}')`;
+        const newBlur = document.createElement('div');
+        newBlur.className = 'blur-layer';
+        newBlur.style.backgroundImage = `url('${track.albumArtUrl}')`;
+        blurContainer.appendChild(newBlur);
+
+        // Force reflow
+        newBlur.offsetWidth;
+        newBlur.classList.add('active');
+
+        // Remove older blur layers after fade transition completes (3s)
+        setTimeout(() => {
+            while (newBlur.previousElementSibling) {
+                newBlur.previousElementSibling.remove();
+            }
+        }, 3000);
 
         // Update flowing gradient background
         const palettes = [

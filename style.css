@@ -152,21 +152,35 @@ body {
     margin: auto;
 }
 
-.background-blur {
+.blur-container {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
+    z-index: -2;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out;
+}
+
+.blur-container.active {
+    opacity: 1;
+}
+
+.blur-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background-size: cover;
     background-position: center;
     filter: blur(var(--blur-strength)) brightness(0.4);
-    z-index: -2;
     opacity: 0;
-    transition: opacity 3s ease-in-out, background-image 3s ease-in-out;
+    transition: opacity 3s ease-in-out;
 }
 
-.background-blur.active {
+.blur-layer.active {
     opacity: 1;
 }
 
